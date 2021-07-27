@@ -18,7 +18,7 @@ def request_handler(request):
         currentTime = datetime.now()
         dateEdge = currentTime - timedelta(days = 20)
         
-        c.execute(f'''DELETE FROM {request['form']['host']} WHERE start<= ?;''', (dateEdge,))
+        c.execute(f'''DELETE FROM {request['form']['host']} WHERE end<= ?;''', (dateEdge,))
         
         ####POST REQUEST####
         if request['method'] == 'POST':
@@ -81,11 +81,13 @@ def request_handler(request):
 
 
 request = {
-    'method': 'GET',
+    'method': 'POST',
     'form': {
         'host': 'Diego',
-        # 'name': 'berndo',
-        'duration': '123456'
+        'name': 'berndo',
+        'duration': '12345'
     }
 }
+
+
 print(request_handler(request))
