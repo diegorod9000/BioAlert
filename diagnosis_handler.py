@@ -33,7 +33,27 @@ def request_handler(request):
             
     ####POST####
     elif request['method'] == 'POST':
-        pass
         #puts the user's name on the alerts of everyone who has interacted with them, and recursively does it with a lower priority
+        # TODO: Add recursive calls
+        numcontacts = 0
+        now = datetime.now()
+        disease = request['form']['disease']
+        hosts = set()
+        with sqlite3.connect(interactions_db) as c:
+            c.execute(
+                f"""CREATE TABLE IF NOT EXISTS {request['form']['host']} (interaction text, start timestamp, end timestamp);""")
+            
+            hosts_raw = c.execute(f'''SELECT interaction FROM {request['form']['host']};''').fetchall()
+            for interaction in hosts_raw:
+                hosts.add(interaction[0])
+                
+        with sqlite3.connect(alerts_db) as c:
+            for name in hosts:
+                c.execute(
+                    f"""CREATE TABLE IF NOT EXISTS {name} (contaminant text, disease text, date timestamp, priority int);""")
+                c.execute(
+                    f'''INSERT into {name} VALUES ("{request['form']['name']}",?,?);''', (disease,now,1))
+        
+        
     else:
         return "Invalid method"
